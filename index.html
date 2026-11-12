@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="本地批量转换图片为 1500×1500 或 970×600 像素。">
+  <meta name="description" content="本地批量转换图片为 1500×1500、1600×1600、1200×1500 或 970×600 像素。">
   <title>像素工坊 - 图片批量转换</title>
   <style>
     :root {
@@ -128,6 +128,8 @@
       background: #fafbf9;
       border-bottom: 1px solid var(--line);
     }
+
+    .converter[data-preset="seven"] .settings { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr) minmax(0, 1fr); }
 
     .field { min-width: 0; }
     .field label { display: block; color: var(--muted); font-size: 11px; font-weight: 600; margin-bottom: 6px; }
@@ -293,6 +295,14 @@
           <div class="dimension">1500 × 1500</div>
         </header>
         <div class="settings">
+          <div class="field">
+            <label for="size-seven">输出尺寸</label>
+            <select id="size-seven" class="size-select">
+              <option value="1500x1500" selected>1500 × 1500</option>
+              <option value="1600x1600">1600 × 1600</option>
+              <option value="1200x1500">1200 × 1500</option>
+            </select>
+          </div>
           <div class="field">
             <label for="fit-seven">图片适配</label>
             <select id="fit-seven" class="fit-select">
@@ -576,6 +586,14 @@
         showToast(`已添加 ${valid.length} 张图片`);
       }
 
+      function updateSevenSize(converter) {
+        const [width, height] = converter.querySelector('.size-select').value.split('x').map(Number);
+        converter.dataset.width = width;
+        converter.dataset.height = height;
+        converter.querySelector('.dimension').textContent = `${width} × ${height}`;
+        converter.querySelector('.drop-hint').textContent = `本地批量转换为 ${width} × ${height}，不会上传`;
+      }
+
       function getConfig(converter) {
         return {
           width: Number(converter.dataset.width),
@@ -640,6 +658,8 @@
       document.querySelectorAll('.converter').forEach(converter => {
         state.set(converter, []);
         const input = converter.querySelector('.file-input');
+        const sizeSelect = converter.querySelector('.size-select');
+        if (sizeSelect) sizeSelect.addEventListener('change', () => updateSevenSize(converter));
         const dropzone = converter.querySelector('.dropzone');
         const fileButton = converter.querySelector('.file-button');
 
